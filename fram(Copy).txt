@@ -1951,7 +1951,7 @@ end
 
 local Fluent = loadstring(game:HttpGet("https://github.com/dawid-scripts/Fluent/releases/latest/download/main.lua"))()
 local Window = Fluent:CreateWindow({
-    Title = "none",
+    Title = "bananahub(kaitoMC276)",
     SubTitle = "",
     TabWidth = 155,
     Size = UDim2.fromOffset(485, 370),
@@ -10946,30 +10946,77 @@ task.spawn(function()
     end)
 end)
 Window:SelectTab(1)
-local ScreenGui = Instance.new("ScreenGui");
-local ImageButton = Instance.new("ImageButton");
-local UICorner = Instance.new("UICorner");
-local ParticleEmitter = Instance.new("ParticleEmitter");
-local TweenService = game:GetService("TweenService");
-ScreenGui.Parent = game.CoreGui;
-ScreenGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling;
-ImageButton.Parent = ScreenGui;
-ImageButton.BackgroundColor3 = Color3.fromRGB(0, 0, 0);
-ImageButton.BorderSizePixel = 0;
-ImageButton.Position = UDim2.new(0.120833337 - 0.1, 0, 0.0952890813 + 0.01, 0);
-ImageButton.Size = UDim2.new(0, 50, 0, 50);
-ImageButton.Draggable = true;
-ImageButton.Image = "http://www.roblox.com/asset/?id=Id Ảnh";
-UICorner.Parent = ImageButton;
-UICorner.CornerRadius = UDim.new(0, 12);
-ParticleEmitter.Parent = ImageButton;
-ParticleEmitter.LightEmission = 1;
-ParticleEmitter.Size = NumberSequence.new({NumberSequenceKeypoint.new(0, 0.1),NumberSequenceKeypoint.new(1, 0)});
-ParticleEmitter.Lifetime = NumberRange.new(0.5, 1);
-ParticleEmitter.Rate = 0;
-ParticleEmitter.Speed = NumberRange.new(5, 10);
-ParticleEmitter.Color = ColorSequence.new(Color3.fromRGB(255, 85, 255), Color3.fromRGB(85, 255, 255));
-local rotateTween = TweenService:Create(ImageButton, TweenInfo.new(0.5, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {Rotation=360});
-ImageButton.MouseButton1Down:Connect(function()
-	game:GetService("VirtualInputManager"):SendKeyEvent(true, Enum.KeyCode.End, false, game);
-end);
+
+local ScreenGui = Instance.new("ScreenGui")
+local ImageButton = Instance.new("ImageButton")
+local UICorner = Instance.new("UICorner")
+local ParticleEmitter = Instance.new("ParticleEmitter")
+local TweenService = game:GetService("TweenService")
+
+ScreenGui.Parent = game.CoreGui
+ScreenGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
+
+ImageButton.Parent = ScreenGui
+ImageButton.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+ImageButton.BorderSizePixel = 0
+ImageButton.Position = UDim2.new(0.020833337, 0, 0.0952890813, 0)
+ImageButton.Size = UDim2.new(0, 50, 0, 50)
+ImageButton.Draggable = true
+ImageButton.Image = "http://www.roblox.com/asset/?id=125868498014025"
+
+-- Làm nút tròn
+UICorner.Parent = ImageButton
+UICorner.CornerRadius = UDim.new(0.5, 0)
+
+-- Hiệu ứng sáng nhẹ
+local uiStroke = Instance.new("UIStroke")
+uiStroke.Thickness = 1.5
+uiStroke.Color = Color3.fromRGB(255, 0, 255)
+uiStroke.Transparency = 0.3
+uiStroke.Parent = ImageButton
+
+ParticleEmitter.Parent = ImageButton
+ParticleEmitter.LightEmission = 1
+ParticleEmitter.Size = NumberSequence.new({
+	NumberSequenceKeypoint.new(0, 0.1),
+	NumberSequenceKeypoint.new(1, 0)
+})
+ParticleEmitter.Lifetime = NumberRange.new(0.5, 1)
+ParticleEmitter.Rate = 0
+ParticleEmitter.Speed = NumberRange.new(5, 10)
+ParticleEmitter.Color = ColorSequence.new(
+	Color3.fromRGB(255, 85, 255),
+	Color3.fromRGB(85, 255, 255)
+)
+
+-- Hiệu ứng xoay khi click
+local rotateTween = TweenService:Create(
+	ImageButton,
+	TweenInfo.new(0.5, Enum.EasingStyle.Quad, Enum.EasingDirection.Out),
+	{ Rotation = 360 }
+)
+
+-- Biến lưu trạng thái hiển thị
+local MenuVisible = true
+
+-- Tìm GUI chính của Fluent
+local FluentGui
+for _, v in pairs(game.CoreGui:GetChildren()) do
+	if v.Name:find("Fluent") then
+		FluentGui = v
+		break
+	end
+end
+
+-- Nút toggle menu
+ImageButton.MouseButton1Click:Connect(function()
+	rotateTween:Play()
+	MenuVisible = not MenuVisible
+
+	if FluentGui then
+		FluentGui.Enabled = MenuVisible
+	end
+
+	-- Hiệu ứng sáng bật/tắt
+	uiStroke.Color = MenuVisible and Color3.fromRGB(85, 255, 255) or Color3.fromRGB(255, 85, 255)
+end)
