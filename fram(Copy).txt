@@ -10945,20 +10945,20 @@ task.spawn(function()
         end)
     end)
 end)
--- 🔘 Nút mở menu (nút tròn có hiệu ứng và đổi màu)
+-- 🔘 Nút mở menu (có hiệu ứng & đổi màu)
 local TweenService = game:GetService("TweenService")
-local VirtualInput = game:GetService("VirtualInputManager")
 
--- 🟢 Biến trạng thái menu
+-- 🟢 Trạng thái menu
 local MenuVisible = true
+local FluentGui
 
--- 🖼️ Giao diện nút
+-- 🖼️ Tạo GUI nút
 local buttonGui = Instance.new("ScreenGui")
 buttonGui.Name = "MenuButtonUI"
 buttonGui.Parent = game.CoreGui
 buttonGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
 
--- 🔘 Tạo nút
+-- 🔘 Nút tròn
 local button = Instance.new("ImageButton")
 button.Name = "OpenMenuButton"
 button.Parent = buttonGui
@@ -10967,16 +10967,16 @@ button.BorderSizePixel = 0
 button.Position = UDim2.new(0.12, 0, 0.1, 0)
 button.Size = UDim2.new(0, 50, 0, 50)
 button.Draggable = true
-button.Image = "http://www.roblox.com/asset/?id=125868498014025"
+button.Image = "http://www.roblox.com/asset/?id=91263051942186"
 
--- 🔘 Bo tròn
+-- 🎨 Bo góc
 local corner = Instance.new("UICorner", button)
 corner.CornerRadius = UDim.new(0, 12)
 
--- 💡 Viền sáng (UIStroke)
+-- 💡 Viền sáng
 local stroke = Instance.new("UIStroke", button)
 stroke.Thickness = 2
-stroke.Color = Color3.fromRGB(85, 255, 255) -- màu xanh lúc bật
+stroke.Color = Color3.fromRGB(85, 255, 255) -- màu xanh khi mở
 
 -- 🌈 Hạt sáng
 local particle = Instance.new("ParticleEmitter", button)
@@ -10996,7 +10996,20 @@ particle.Color = ColorSequence.new(
 -- 🔄 Hiệu ứng xoay
 local spin = TweenService:Create(button, TweenInfo.new(0.5, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {Rotation = 360})
 
--- 🎯 Hàm đổi màu viền
+-- 🧩 Tự tìm Fluent GUI
+task.spawn(function()
+    repeat
+        task.wait(0.3)
+        for _, v in pairs(game.CoreGui:GetChildren()) do
+            if v:IsA("ScreenGui") and v:FindFirstChild("MainFrame") then
+                FluentGui = v
+                break
+            end
+        end
+    until FluentGui
+end)
+
+-- 🎨 Hàm đổi màu viền
 local function UpdateColor()
     local targetColor = MenuVisible and Color3.fromRGB(85, 255, 255) or Color3.fromRGB(255, 85, 85)
     TweenService:Create(stroke, TweenInfo.new(0.3, Enum.EasingStyle.Quad), {Color = targetColor}):Play()
@@ -11004,29 +11017,30 @@ end
 
 -- 🖱️ Khi nhấn nút
 button.MouseButton1Down:Connect(function()
-    -- Hạt sáng bung ra
+    -- Hạt sáng
     particle.Rate = 100
-    task.delay(1, function() particle.Rate = 0 end)
+    task.delay(0.5, function() particle.Rate = 0 end)
 
-    -- Xoay nút
+    -- Xoay
     spin:Play()
     spin.Completed:Once(function() button.Rotation = 0 end)
 
-    -- Toggle menu (bằng phím End)
-    VirtualInput:SendKeyEvent(true, Enum.KeyCode.End, false, game)
+    -- Toggle menu thật (ẩn/hiện GUI)
     MenuVisible = not MenuVisible
+    if FluentGui then
+        FluentGui.Enabled = MenuVisible
+    end
     UpdateColor()
 
-    -- Phóng to
+    -- Hiệu ứng phóng to thu nhỏ
     local grow = TweenService:Create(button, TweenInfo.new(0.2, Enum.EasingStyle.Bounce, Enum.EasingDirection.Out), {
         Size = UDim2.new(0, 60, 0, 60)
     })
     grow:Play()
     grow.Completed:Once(function()
-        local shrink = TweenService:Create(button, TweenInfo.new(0.2, Enum.EasingStyle.Bounce, Enum.EasingDirection.Out), {
+        TweenService:Create(button, TweenInfo.new(0.2, Enum.EasingStyle.Bounce, Enum.EasingDirection.Out), {
             Size = UDim2.new(0, 50, 0, 50)
-        })
-        shrink:Play()
+        }):Play()
     end)
 end)
 
