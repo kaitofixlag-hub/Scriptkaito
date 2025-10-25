@@ -1949,7 +1949,6 @@ QuestNeta = function()
     }
 end
 
---// Tạo Fluent UI Window
 local Fluent = loadstring(game:HttpGet("https://github.com/dawid-scripts/Fluent/releases/latest/download/main.lua"))()
 local Window = Fluent:CreateWindow({
     Title = "bananahub(kaitoMC276)",
@@ -1960,87 +1959,6 @@ local Window = Fluent:CreateWindow({
     Theme = "Dark",
     MinimizeKey = Enum.KeyCode.End
 })
-
--- Chọn tab đầu tiên khi mở
-Window:SelectTab(1)
-
----------------------------------------------------------
---// Nút bật/tắt menu Fluent
-local TweenService = game:GetService("TweenService")
-
-local ScreenGui = Instance.new("ScreenGui")
-ScreenGui.Parent = game.CoreGui
-ScreenGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
-
-local ImageButton = Instance.new("ImageButton")
-ImageButton.Parent = ScreenGui
-ImageButton.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
-ImageButton.BorderSizePixel = 0
-ImageButton.Position = UDim2.new(0.02, 0, 0.095, 0)
-ImageButton.Size = UDim2.new(0, 50, 0, 50)
-ImageButton.Draggable = true
-ImageButton.Image = "http://www.roblox.com/asset/?id=125868498014025"
-
--- Bo góc tròn
-local UICorner = Instance.new("UICorner")
-UICorner.CornerRadius = UDim.new(0.5, 0)
-UICorner.Parent = ImageButton
-
--- Viền sáng
-local uiStroke = Instance.new("UIStroke")
-uiStroke.Thickness = 1.5
-uiStroke.Color = Color3.fromRGB(85, 255, 255)
-uiStroke.Transparency = 0.3
-uiStroke.Parent = ImageButton
-
--- Hạt phát sáng
-local ParticleEmitter = Instance.new("ParticleEmitter")
-ParticleEmitter.Parent = ImageButton
-ParticleEmitter.LightEmission = 1
-ParticleEmitter.Size = NumberSequence.new({
-    NumberSequenceKeypoint.new(0, 0.1),
-    NumberSequenceKeypoint.new(1, 0)
-})
-ParticleEmitter.Lifetime = NumberRange.new(0.5, 1)
-ParticleEmitter.Rate = 0
-ParticleEmitter.Speed = NumberRange.new(5, 10)
-ParticleEmitter.Color = ColorSequence.new(
-    Color3.fromRGB(255, 85, 255),
-    Color3.fromRGB(85, 255, 255)
-)
-
--- Hiệu ứng xoay khi click
-local rotateTween = TweenService:Create(
-    ImageButton,
-    TweenInfo.new(0.5, Enum.EasingStyle.Quad, Enum.EasingDirection.Out),
-    { Rotation = 360 }
-)
-
--- Biến trạng thái
-local MenuVisible = true
-
--- Tìm GUI Fluent
-local FluentGui
-for _, v in pairs(game.CoreGui:GetChildren()) do
-    if v.Name:find("Fluent") then
-        FluentGui = v
-        break
-    end
-end
-
--- Khi nhấn nút
-ImageButton.MouseButton1Click:Connect(function()
-    rotateTween:Play()
-    MenuVisible = not MenuVisible
-
-    if FluentGui then
-        FluentGui.Enabled = MenuVisible
-    end
-
-    -- Đổi màu viền để báo trạng thái
-    uiStroke.Color = MenuVisible and Color3.fromRGB(85, 255, 255) or Color3.fromRGB(255, 85, 255)
-end)
-
 local Tabs = {
     Main = Window:AddTab({
         Title = "Farm",
@@ -11026,5 +10944,102 @@ task.spawn(function()
             end
         end)
     end)
+end)
+Window:SelectTab(1)
+
+local ScreenGui = Instance.new("ScreenGui")
+local ImageButton = Instance.new("ImageButton")
+local UICorner = Instance.new("UICorner")
+local ParticleEmitter = Instance.new("ParticleEmitter")
+local TweenService = game:GetService("TweenService")
+
+ScreenGui.Parent = game.CoreGui
+ScreenGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
+
+ImageButton.Parent = ScreenGui
+ImageButton.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+ImageButton.BorderSizePixel = 0
+ImageButton.Position = UDim2.new(0.02, 0, 0.095, 0)
+ImageButton.Size = UDim2.new(0, 50, 0, 50)
+ImageButton.Draggable = true
+ImageButton.Image = "rbxassetid://125868498014025" -- đổi sang dạng đúng
+
+-- Làm nút tròn
+UICorner.Parent = ImageButton
+UICorner.CornerRadius = UDim.new(0.5, 0)
+
+-- Hiệu ứng sáng
+local uiStroke = Instance.new("UIStroke")
+uiStroke.Thickness = 1.5
+uiStroke.Color = Color3.fromRGB(85, 255, 255)
+uiStroke.Transparency = 0.3
+uiStroke.Parent = ImageButton
+
+-- Hạt sáng
+ParticleEmitter.Parent = ImageButton
+ParticleEmitter.LightEmission = 1
+ParticleEmitter.Size = NumberSequence.new({
+    NumberSequenceKeypoint.new(0, 0.1),
+    NumberSequenceKeypoint.new(1, 0)
+})
+ParticleEmitter.Lifetime = NumberRange.new(0.5, 1)
+ParticleEmitter.Rate = 0
+ParticleEmitter.Speed = NumberRange.new(5, 10)
+ParticleEmitter.Color = ColorSequence.new(
+    Color3.fromRGB(255, 85, 255),
+    Color3.fromRGB(85, 255, 255)
+)
+
+-- Hiệu ứng xoay khi click
+local rotateTween = TweenService:Create(
+    ImageButton,
+    TweenInfo.new(0.4, Enum.EasingStyle.Quad, Enum.EasingDirection.Out),
+    { Rotation = 360 }
+)
+
+-- Reset góc xoay
+rotateTween.Completed:Connect(function()
+    ImageButton.Rotation = 0
+end)
+
+-- Biến lưu trạng thái menu
+local MenuVisible = true
+
+-- Tìm GUI chính của Fluent
+local FluentGui
+for _, v in pairs(game.CoreGui:GetChildren()) do
+    if v:IsA("ScreenGui") and v:FindFirstChild("MainFrame") then
+        FluentGui = v
+        break
+    end
+end
+
+-- Nếu vẫn chưa tìm được, chờ nó xuất hiện
+if not FluentGui then
+    task.spawn(function()
+        repeat
+            task.wait(0.2)
+            for _, v in pairs(game.CoreGui:GetChildren()) do
+                if v:IsA("ScreenGui") and v:FindFirstChild("MainFrame") then
+                    FluentGui = v
+                    break
+                end
+            end
+        until FluentGui
+    end)
+end
+
+-- Toggle menu
+ImageButton.MouseButton1Click:Connect(function()
+    rotateTween:Play()
+    MenuVisible = not MenuVisible
+
+    if FluentGui then
+        FluentGui.Enabled = MenuVisible
+    end
+
+    uiStroke.Color = MenuVisible
+        and Color3.fromRGB(85, 255, 255)
+        or Color3.fromRGB(255, 85, 255)
 end)
 
