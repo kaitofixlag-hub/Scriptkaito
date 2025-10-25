@@ -10948,7 +10948,10 @@ end)
 -- 🔘 Nút mở menu (nút tròn có hiệu ứng)
 local TweenService = game:GetService("TweenService")
 
-local buttonGui = Instance.new("ScreenGui", game.CoreGui)
+local buttonGui = Instance.new("ScreenGui")
+buttonGui.Name = "MenuButton"
+buttonGui.Parent = game.CoreGui
+
 local button = Instance.new("ImageButton", buttonGui)
 button.Name = "OpenMenuButton"
 button.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
@@ -10974,6 +10977,18 @@ particle.Color = ColorSequence.new(Color3.fromRGB(255, 85, 255), Color3.fromRGB(
 
 local spin = TweenService:Create(button, TweenInfo.new(0.5, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {Rotation = 360})
 
+-- ⚙️ Tìm Fluent GUI
+local FluentGui
+for _, v in pairs(game.CoreGui:GetChildren()) do
+    if v:IsA("ScreenGui") and v:FindFirstChild("MainFrame") then
+        FluentGui = v
+        break
+    end
+end
+
+-- 🔁 Toggle menu trực tiếp thay vì phím End
+local MenuVisible = true
+
 button.MouseButton1Down:Connect(function()
     particle.Rate = 100
     task.delay(1, function()
@@ -10981,17 +10996,26 @@ button.MouseButton1Down:Connect(function()
     end)
 
     spin:Play()
-    game:GetService("VirtualInputManager"):SendKeyEvent(true, Enum.KeyCode.End, false, game)
 
-    spin.Completed:Connect(function()
+    spin.Completed:Once(function()
         button.Rotation = 0
     end)
 
-    local grow = TweenService:Create(button, TweenInfo.new(0.2, Enum.EasingStyle.Bounce, Enum.EasingDirection.Out), {Size = UDim2.new(0, 60, 0, 60)})
+    -- Toggle menu trực tiếp
+    MenuVisible = not MenuVisible
+    if FluentGui then
+        FluentGui.Enabled = MenuVisible
+    end
+
+    -- Hiệu ứng phóng to rồi thu nhỏ
+    local grow = TweenService:Create(button, TweenInfo.new(0.2, Enum.EasingStyle.Bounce, Enum.EasingDirection.Out), {
+        Size = UDim2.new(0, 60, 0, 60)
+    })
     grow:Play()
-    grow.Completed:Connect(function()
-    TweenService:Create(button, TweenInfo.new(0.2, Enum.EasingStyle.Bounce, Enum.EasingDirection.Out), {
-        Size = UDim2.new(0, 50, 0, 50)
-    }):Play()
+    grow.Completed:Once(function()
+        TweenService:Create(button, TweenInfo.new(0.2, Enum.EasingStyle.Bounce, Enum.EasingDirection.Out), {
+            Size = UDim2.new(0, 50, 0, 50)
+        }):Play()
+    end)
 end)
 
