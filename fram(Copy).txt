@@ -10945,77 +10945,74 @@ task.spawn(function()
         end)
     end)
 end)
--- 🔘 Nút mở menu (nút tròn có hiệu ứng)
-local TweenService = game:GetService("TweenService")
+local UserInputService = game:GetService("UserInputService")
 
-local buttonGui = Instance.new("ScreenGui")
-buttonGui.Name = "MenuButton"
-buttonGui.Parent = game.CoreGui
+-- Giao diện chính
+local screenGui = Instance.new("ScreenGui")
+screenGui.Name = "ControlGUI"
+screenGui.Parent = game.CoreGui
 
-local button = Instance.new("ImageButton", buttonGui)
-button.Name = "OpenMenuButton"
-button.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
-button.BorderSizePixel = 0
-button.Position = UDim2.new(0.12, 0, 0.1, 0)
-button.Size = UDim2.new(0, 50, 0, 50)
-button.Draggable = true
-button.Image = "http://www.roblox.com/asset/?id=91263051942186"
+-- Nút toggle
+local toggleButton = Instance.new("ImageButton")
+toggleButton.Size = UDim2.new(0, 55, 0, 55)
+toggleButton.Position = UDim2.new(0.15, 0, 0.15, 0)
+toggleButton.Image = "rbxassetid://73675787844710"
+toggleButton.ScaleType = Enum.ScaleType.Fit
+toggleButton.BackgroundColor3 = Color3.fromRGB(25, 25, 25)
+toggleButton.BorderSizePixel = 0
+toggleButton.Parent = screenGui
 
-local corner = Instance.new("UICorner", button)
-corner.CornerRadius = UDim.new(0, 12)
+-- 🟢 Bo tròn hoàn toàn nút
+local corner = Instance.new("UICorner")
+corner.CornerRadius = UDim.new(1, 0)
+corner.Parent = toggleButton
 
-local particle = Instance.new("ParticleEmitter", button)
-particle.LightEmission = 1
-particle.Size = NumberSequence.new({
-    NumberSequenceKeypoint.new(0, 0.1),
-    NumberSequenceKeypoint.new(1, 0)
-})
-particle.Lifetime = NumberRange.new(0.5, 1)
-particle.Rate = 0
-particle.Speed = NumberRange.new(5, 10)
-particle.Color = ColorSequence.new(Color3.fromRGB(255, 85, 255), Color3.fromRGB(85, 255, 255))
+-- 🖱 Kéo nút
+local dragging, dragInput, dragStart, startPos
 
-local spin = TweenService:Create(button, TweenInfo.new(0.5, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {Rotation = 360})
-
--- ⚙️ Tìm Fluent GUI
-local FluentGui
-for _, v in pairs(game.CoreGui:GetChildren()) do
-    if v:IsA("ScreenGui") and v:FindFirstChild("MainFrame") then
-        FluentGui = v
-        break
-    end
+local function update(input)
+	local delta = input.Position - dragStart
+	toggleButton.Position = UDim2.new(
+		startPos.X.Scale,
+		startPos.X.Offset + delta.X,
+		startPos.Y.Scale,
+		startPos.Y.Offset + delta.Y
+	)
 end
 
--- 🔁 Toggle menu trực tiếp thay vì phím End
-local MenuVisible = true
-
-button.MouseButton1Down:Connect(function()
-    particle.Rate = 100
-    task.delay(1, function()
-        particle.Rate = 0
-    end)
-
-    spin:Play()
-
-    spin.Completed:Once(function()
-        button.Rotation = 0
-    end)
-
-    -- Toggle menu trực tiếp
-    MenuVisible = not MenuVisible
-    if FluentGui then
-        FluentGui.Enabled = MenuVisible
-    end
-
-    -- Hiệu ứng phóng to rồi thu nhỏ
-    local grow = TweenService:Create(button, TweenInfo.new(0.2, Enum.EasingStyle.Bounce, Enum.EasingDirection.Out), {
-        Size = UDim2.new(0, 60, 0, 60)
-    })
-    grow:Play()
-    grow.Completed:Once(function()
-        TweenService:Create(button, TweenInfo.new(0.2, Enum.EasingStyle.Bounce, Enum.EasingDirection.Out), {
-            Size = UDim2.new(0, 50, 0, 50)
-        }):Play()
-    end)
+toggleButton.InputBegan:Connect(function(input)
+	if input.UserInputType == Enum.UserInputType.Touch or input.UserInputType == Enum.UserInputType.MouseButton1 then
+		dragging = true
+		dragStart = input.Position
+		startPos = toggleButton.Position
+		input.Changed:Connect(function()
+			if input.UserInputState == Enum.UserInputState.End then
+				dragging = false
+			end
+		end)
+	end
 end)
 
+toggleButton.InputChanged:Connect(function(input)
+	if input.UserInputType == Enum.UserInputType.Touch or input.UserInputType == Enum.UserInputType.MouseMovement then
+		dragInput = input
+	end
+end)
+
+UserInputService.InputChanged:Connect(function(input)
+	if dragging and input == dragInput then
+		update(input)
+	end
+end)
+
+-- ⚙️ Toggle Fluent menu
+local isFluentVisible = true
+
+toggleButton.MouseButton1Click:Connect(function()
+	isFluentVisible = not isFluentVisible
+	if isFluentVisible then
+		Window:Minimize(false)
+	else
+		Window:Minimize(true)
+	end
+end)
