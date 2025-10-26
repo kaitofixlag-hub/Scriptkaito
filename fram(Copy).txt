@@ -1960,6 +1960,10 @@ local Window = Fluent:CreateWindow({
     MinimizeKey = Enum.KeyCode.End
 })
 local Tabs = {
+   Thongtin = Window:AddTab({
+        Title = "thông Tin",
+        Icon = ""
+    }),
     Main = Window:AddTab({
         Title = "Farm",
         Icon = ""
@@ -2069,6 +2073,21 @@ spawn(function()
         end
     end
 end)
+local Thongtin = Tabs.Thongtin:AddToggle("FarmLevel", {
+    Title = "ytb người phát hành,
+    Description = "kaitoMC  Community",
+    Callback = function()
+        setclipboard("https://youtube.com/@kaitomc276?si=FxZabfsaOi1TnQmq")
+    end
+})
+
+local Thongtin = Tabs.Thongtin:AddToggle("FarmLevel", {
+    Title = "Zalo người phát hành,
+    Description = "kaitoMC  Community",
+    Callback = function()
+        setclipboard("https://zalo.me/g/uxlbxz736")
+    end
+})
 local TravelDress = Tabs.Main:AddToggle("TravelDress", {
     Title = "Auto Travel Dressrosa",
     Description = "",
@@ -10956,7 +10975,7 @@ screenGui.Parent = game.CoreGui
 local toggleButton = Instance.new("ImageButton")
 toggleButton.Size = UDim2.new(0, 55, 0, 55)
 toggleButton.Position = UDim2.new(0.15, 0, 0.15, 0)
-toggleButton.Image = "rbxassetid://73675787844710"
+toggleButton.Image = "rbxassetid://125868498014025"
 toggleButton.ScaleType = Enum.ScaleType.Fit
 toggleButton.BackgroundColor3 = Color3.fromRGB(25, 25, 25)
 toggleButton.BorderSizePixel = 0
